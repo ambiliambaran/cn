@@ -1,0 +1,33 @@
+#include<stdio.h>
+
+int main(){
+    int n, window = 4, i, base = 0;
+    int ack[20];
+
+    printf("Enter number of frames: ");
+    scanf("%d", &n);
+
+    while(base < n){
+        printf("\nSending frames: ");
+        for(i = base; i < base + window && i < n; i++)
+            printf("%d ", i);
+
+        printf("\nEnter ACKs (1=received, 0=lost):\n");
+        for(i = base; i < base + window && i < n; i++){
+            printf("Frame %d: ", i);
+            scanf("%d", &ack[i]);
+        }
+
+        for(i = base; i < n; i++){
+            if(ack[i] == 1)
+                base++;
+            else{
+                printf("Frame %d lost. Go back to frame %d\n", i, i);
+                break;
+            }
+        }
+    }
+
+    printf("\nAll frames transmitted successfully.\n");
+    return 0;
+}
