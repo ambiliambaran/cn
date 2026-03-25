@@ -1,0 +1,25 @@
+#include<stdio.h>
+
+int main(){
+    int n, i;
+    int received[20];
+
+    printf("Enter number of frames: ");
+    scanf("%d", &n);
+
+    printf("Enter received status (1=received, 0=lost):\n");
+    for(i = 0; i < n; i++){
+        printf("Frame %d: ", i);
+        scanf("%d", &received[i]);
+    }
+
+    for(i = 0; i < n; i++){
+        if(received[i] == 0){
+            printf("\nFrame %d lost. Retransmitting frame %d", i, i);
+            received[i] = 1;
+        }
+    }
+
+    printf("\nAll frames received successfully.\n");
+    return 0;
+}
