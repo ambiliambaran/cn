@@ -1,0 +1,23 @@
+#include<stdio.h>
+
+int main(){
+    int frame = 0;
+    char ack;
+
+    while(frame < 5){
+        printf("\nSending Frame %d", frame);
+        printf("\nEnter ACK for Frame %d (y/n): ", frame);
+        scanf(" %c", &ack);
+
+        if(ack == 'y'){
+            printf("ACK received for Frame %d", frame);
+            frame++;
+        }
+        else{
+            printf("Frame %d lost. Retransmitting...", frame);
+        }
+    }
+
+    printf("\nAll frames sent successfully.\n");
+    return 0;
+}
