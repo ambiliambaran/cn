@@ -1,33 +1,44 @@
-#include<stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
 
-int main(){
-    int n, window = 4, i, base = 0;
-    int ack[20];
+int main() {
+    int frames, window, i = 0;
+    int ack;
+
+    srand(time(NULL));
 
     printf("Enter number of frames: ");
-    scanf("%d", &n);
+    scanf("%d", &frames);
 
-    while(base < n){
+    printf("Enter window size: ");
+    scanf("%d", &window);
+
+    while(i < frames) {
         printf("\nSending frames: ");
-        for(i = base; i < base + window && i < n; i++)
-            printf("%d ", i);
 
-        printf("\nEnter ACKs (1=received, 0=lost):\n");
-        for(i = base; i < base + window && i < n; i++){
-            printf("Frame %d: ", i);
-            scanf("%d", &ack[i]);
+        int last = i + window - 1;
+        if(last >= frames)
+            last = frames - 1;
+
+        for(int j = i; j <= last; j++) {
+            printf("%d ", j);
         }
 
-        for(i = base; i < n; i++){
-            if(ack[i] == 1)
-                base++;
-            else{
-                printf("Frame %d lost. Go back to frame %d\n", i, i);
-                break;
-            }
+        printf("\n");
+        sleep(1);
+
+        ack = rand() % 2;
+
+        if(ack == 1) {
+            printf("ACK received till frame %d\n", last);
+            i = last + 1;
+        } else {
+            printf("ACK lost! Resending from frame %d\n", i);
         }
     }
 
-    printf("\nAll frames transmitted successfully.\n");
+    printf("\nAll frames sent successfully\n");
     return 0;
 }
