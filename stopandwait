@@ -1,23 +1,33 @@
-#include<stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
 
-int main(){
-    int frame = 0;
-    char ack;
+int main() {
+    int frames, i;
+    int ack;
 
-    while(frame < 5){
-        printf("\nSending Frame %d", frame);
-        printf("\nEnter ACK for Frame %d (y/n): ", frame);
-        scanf(" %c", &ack);
+    srand(time(NULL));
 
-        if(ack == 'y'){
-            printf("ACK received for Frame %d", frame);
-            frame++;
-        }
-        else{
-            printf("Frame %d lost. Retransmitting...", frame);
+    printf("Enter number of frames: ");
+    scanf("%d", &frames);
+
+    for(i = 0; i < frames; i++) {
+        while(1) {
+            printf("\nSending frame %d\n", i);
+            sleep(1);
+
+            ack = rand() % 2;
+
+            if(ack == 1) {
+                printf("ACK received for frame %d\n", i);
+                break;
+            } else {
+                printf("ACK lost! Resending frame %d\n", i);
+            }
         }
     }
 
-    printf("\nAll frames sent successfully.\n");
+    printf("\nAll frames sent successfully\n");
     return 0;
 }
