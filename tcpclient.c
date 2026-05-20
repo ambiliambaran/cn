@@ -22,9 +22,11 @@ int main() {
         fgets(buffer, sizeof(buffer), stdin);
 
         send(sockfd, buffer, strlen(buffer), 0);
-
-        read(sockfd, buffer, sizeof(buffer));
-        printf("Server: %s\n", buffer);
+        
+        int n;
+        n = read(sockfd, buffer, sizeof(buffer)-1);
+        buffer[n] = '\0';
+        printf("Server: %s", buffer);
     }
 
     close(sockfd);
