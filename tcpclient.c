@@ -24,9 +24,10 @@ int main() {
         send(sockfd, buffer, strlen(buffer), 0);
         
         int n;
-        n = read(sockfd, buffer, sizeof(buffer)-1);
-        buffer[n] = '\0';
-        printf("Server: %s", buffer);
+        n = read(client_socket, buffer, sizeof(buffer)-1);
+       if(n <= 0)
+       break;
+       buffer[n] = '\0';
     }
 
     close(sockfd);
