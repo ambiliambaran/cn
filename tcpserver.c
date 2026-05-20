@@ -25,8 +25,11 @@ int main() {
     client_socket = accept(server_fd, (struct sockaddr*)&client_addr, &addr_size);
 
     while(1) {
-        read(client_socket, buffer, sizeof(buffer));
-        printf("Client: %s\n", buffer);
+        int n;
+        n = read(client_socket, buffer, sizeof(buffer)-1);
+        buffer[n] = '\0';
+
+        printf("Client: %s", buffer);
 
         printf("Server: ");
         fgets(buffer, sizeof(buffer), stdin);
