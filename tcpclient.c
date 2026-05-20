@@ -18,16 +18,21 @@ int main() {
     connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr));
 
     while(1) {
-        printf("Client: ");
-        fgets(buffer, sizeof(buffer), stdin);
+    
+    printf("Client: ");
+    fgets(buffer, sizeof(buffer), stdin);
 
-        send(sockfd, buffer, strlen(buffer), 0);
-        
-        int n;
-        n = read(client_socket, buffer, sizeof(buffer)-1);
-       if(n <= 0)
-       break;
-       buffer[n] = '\0';
+    send(sockfd, buffer, strlen(buffer), 0);
+
+    int n;
+    n = read(sockfd, buffer, sizeof(buffer)-1);
+
+    if(n <= 0)
+        break;
+
+    buffer[n] = '\0';
+
+    printf("Server: %s", buffer);
     }
 
     close(sockfd);
