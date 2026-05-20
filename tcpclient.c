@@ -18,7 +18,7 @@ int main() {
     connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr));
 
     while(1) {
-    
+
     printf("Client: ");
     fgets(buffer, sizeof(buffer), stdin);
 
@@ -33,7 +33,7 @@ int main() {
     buffer[n] = '\0';
 
     printf("Server: %s", buffer);
-    }
+}
 
     close(sockfd);
     return 0;
