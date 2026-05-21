@@ -24,22 +24,24 @@ int main() {
     server.sin_port = htons(8080);
     server.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    printf("Enter message: ");
-    fgets(buffer, sizeof(buffer), stdin);
+    printf("UDP Client started...\n");
 
-    buffer[strcspn(buffer, "\n")] = '\0';
+    while (1) {
+        printf("Client: ");
+        fgets(buffer, sizeof(buffer), stdin);
 
-    sendto(sockfd, buffer, strlen(buffer), 0,
-           (struct sockaddr *)&server, len);
+        buffer[strcspn(buffer, "\n")] = '\0';
 
-    printf("Message sent to server\n");
+        sendto(sockfd, buffer, strlen(buffer), 0,
+               (struct sockaddr *)&server, len);
 
-    memset(response, 0, sizeof(response));
+        memset(response, 0, sizeof(response));
 
-    recvfrom(sockfd, response, sizeof(response) - 1, 0,
-             (struct sockaddr *)&server, &len);
+        recvfrom(sockfd, response, sizeof(response) - 1, 0,
+                 (struct sockaddr *)&server, &len);
 
-    printf("Message from server: %s\n", response);
+        printf("Server: %s\n", response);
+    }
 
     close(sockfd);
     return 0;
