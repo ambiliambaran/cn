@@ -31,8 +31,10 @@ int main() {
         printf("Server: ");
         fgets(buffer, sizeof(buffer), stdin);
 
-        sendto(sockfd, buffer, strlen(buffer), 0,
-               (struct sockaddr*)&client_addr, addr_len);
+        buffer[strcspn(buffer, "\n")] = 0;   
+
+        sendto(sockfd, buffer, strlen(buffer)+1, 0,
+       (struct sockaddr*)&client_addr, addr_len);
     }
 
     close(sockfd);
