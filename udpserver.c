@@ -29,7 +29,7 @@ int main() {
         exit(1);
     }
 
-    printf("Waiting for data...\n");
+    printf("UDP Server started...\n");
 
     while (1) {
         memset(buffer, 0, sizeof(buffer));
@@ -37,9 +37,13 @@ int main() {
         recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0,
                  (struct sockaddr *)&client, &len);
 
-        printf("Message from client: %s\n", buffer);
+        printf("Client: %s\n", buffer);
 
-        sendto(sockfd, "Hello from server", strlen("Hello from server"), 0,
+        printf("Server: ");
+        fgets(buffer, sizeof(buffer), stdin);
+        buffer[strcspn(buffer, "\n")] = '\0';
+
+        sendto(sockfd, buffer, strlen(buffer), 0,
                (struct sockaddr *)&client, len);
     }
 
