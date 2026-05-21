@@ -1,15 +1,14 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 
 int main() {
     int sockfd;
-    struct sockaddr_in server;
+    struct sockaddr_in server_addr;
     char buffer[1024];
-    char response[1024];
-    socklen_t len = sizeof(server);
+    socklen_t addr_size = sizeof(server_addr);
 
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -18,29 +17,25 @@ int main() {
         exit(1);
     }
 
-    memset(&server, 0, sizeof(server));
+    memset(&server_addr, 0, sizeof(server_addr));
 
-    server.sin_family = AF_INET;
-    server.sin_port = htons(8080);
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
-
-    printf("UDP Client started...\n");
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(8080);
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     while (1) {
         printf("Client: ");
         fgets(buffer, sizeof(buffer), stdin);
 
-        buffer[strcspn(buffer, "\n")] = '\0';
-
         sendto(sockfd, buffer, strlen(buffer), 0,
-               (struct sockaddr *)&server, len);
+               (struct sockaddr*)&server_addr, addr_size);
 
-        memset(response, 0, sizeof(response));
+        memset(buffer, 0, sizeof(buffer));
 
-        recvfrom(sockfd, response, sizeof(response) - 1, 0,
-                 (struct sockaddr *)&server, &len);
+        recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0,
+                 (struct sockaddr*)&server_addr, &addr_size);
 
-        printf("Server: %s\n", response);
+        printf("Server: %s", buffer);
     }
 
     close(sockfd);
