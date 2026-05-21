@@ -1,56 +1,46 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 
 int main() {
     int sockfd;
-    struct sockaddr_in server_addr, client_addr;
-    socklen_t addr_len;
+    struct sockaddr_in server, client;
     char buffer[1024];
+    socklen_t len = sizeof(client);
 
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+
     if (sockfd < 0) {
-        perror("Socket creation failed");
+        perror("Socket failed");
         exit(1);
     }
 
-    memset(&server_addr, 0, sizeof(server_addr));
-    memset(&client_addr, 0, sizeof(client_addr));
+    memset(&server, 0, sizeof(server));
+    memset(&client, 0, sizeof(client));
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(8080);
-    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_port = htons(8080);
 
-    if (bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+    if (bind(sockfd, (struct sockaddr *)&server, sizeof(server)) < 0) {
         perror("Bind failed");
         exit(1);
     }
 
-    printf("UDP Server waiting on port 8080...\n");
-
-    addr_len = sizeof(client_addr);
+    printf("Waiting for data...\n");
 
     while (1) {
         memset(buffer, 0, sizeof(buffer));
 
-        int n = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0,
-                          (struct sockaddr*)&client_addr, &addr_len);
+        recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0,
+                 (struct sockaddr *)&client, &len);
 
-        if (n < 0) {
-            perror("recvfrom failed");
-            continue;
-        }
+        printf("Message from client: %s\n", buffer);
 
-        buffer[n] = '\0';   
-
-        printf("Client: %s\n", buffer);
-
-        strcpy(buffer, "hi");
-
-        sendto(sockfd, buffer, strlen(buffer), 0,
-               (struct sockaddr*)&client_addr, addr_len);
+        sendto(sockfd, "Hello from server", strlen("Hello from server"), 0,
+               (struct sockaddr *)&client, len);
     }
 
     close(sockfd);
