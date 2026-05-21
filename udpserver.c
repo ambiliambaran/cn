@@ -23,18 +23,17 @@ int main() {
     addr_len = sizeof(client_addr);
 
     while(1) {
-        recvfrom(sockfd, buffer, sizeof(buffer), 0,
-                 (struct sockaddr*)&client_addr, &addr_len);
+    memset(buffer, 0, sizeof(buffer));
 
-        printf("Client: %s\n", buffer);
+    recvfrom(sockfd, buffer, sizeof(buffer), 0,
+             (struct sockaddr*)&client_addr, &addr_len);
 
-        printf("Server: ");
-        fgets(buffer, sizeof(buffer), stdin);
+    printf("Client: %s\n", buffer);
 
-        buffer[strcspn(buffer, "\n")] = 0;   
+    strcpy(buffer, "hi");   
 
-        sendto(sockfd, buffer, strlen(buffer)+1, 0,
-       (struct sockaddr*)&client_addr, addr_len);
+    sendto(sockfd, buffer, strlen(buffer)+1, 0,
+           (struct sockaddr*)&client_addr, addr_len);
     }
 
     close(sockfd);
