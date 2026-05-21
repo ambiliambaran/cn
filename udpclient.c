@@ -25,9 +25,10 @@ int main() {
         buffer[strcspn(buffer, "\n")] = 0;   // remove Enter
 
         sendto(sockfd, buffer, strlen(buffer)+1, 0,
-       (struct sockaddr*)&server_addr, addr_len);
+        (struct sockaddr*)&server_addr, addr_len);
 
-         recvfrom(sockfd, buffer, sizeof(buffer), 0,
+         memset(buffer, 0, sizeof(buffer));
+         recvfrom(sockfd, buffer, sizeof(buffer)-1, 0,
          (struct sockaddr*)&server_addr, &addr_len);
 
          printf("Server: %s\n", buffer);        
