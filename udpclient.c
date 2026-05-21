@@ -1,56 +1,45 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 
 int main() {
     int sockfd;
-    struct sockaddr_in server_addr;
-    socklen_t addr_len;
+    struct sockaddr_in server;
     char buffer[1024];
+    char response[1024];
+    socklen_t len = sizeof(server);
 
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+
     if (sockfd < 0) {
-        perror("Socket creation failed");
+        perror("Socket failed");
         exit(1);
     }
 
-    memset(&server_addr, 0, sizeof(server_addr));
+    memset(&server, 0, sizeof(server));
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(8080);
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server.sin_family = AF_INET;
+    server.sin_port = htons(8080);
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    addr_len = sizeof(server_addr);
+    printf("Enter message: ");
+    fgets(buffer, sizeof(buffer), stdin);
 
-    printf("UDP Client started...\n");
+    buffer[strcspn(buffer, "\n")] = '\0';
 
-    while (1) {
-        printf("Client: ");
-        fflush(stdout);
+    sendto(sockfd, buffer, strlen(buffer), 0,
+           (struct sockaddr *)&server, len);
 
-        fgets(buffer, sizeof(buffer), stdin);
+    printf("Message sent to server\n");
 
-        buffer[strcspn(buffer, "\n")] = '\0';
+    memset(response, 0, sizeof(response));
 
-        sendto(sockfd, buffer, strlen(buffer), 0,
-               (struct sockaddr*)&server_addr, addr_len);
+    recvfrom(sockfd, response, sizeof(response) - 1, 0,
+             (struct sockaddr *)&server, &len);
 
-        memset(buffer, 0, sizeof(buffer));
-
-        int n = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0,
-                         (struct sockaddr*)&server_addr, &addr_len);
-
-        if (n < 0) {
-            perror("recvfrom failed");
-            continue;
-        }
-
-        buffer[n] = '\0';
-
-        printf("Server: %s\n", buffer);
-    }
+    printf("Message from server: %s\n", response);
 
     close(sockfd);
     return 0;
