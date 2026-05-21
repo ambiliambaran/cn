@@ -11,6 +11,12 @@ int main() {
     char buffer[1024];
 
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+        perror("Socket creation failed");
+        exit(1);
+    }
+
+    memset(&server_addr, 0, sizeof(server_addr));
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(8080);
@@ -18,20 +24,32 @@ int main() {
 
     addr_len = sizeof(server_addr);
 
-    while(1) {
+    printf("UDP Client started...\n");
+
+    while (1) {
         printf("Client: ");
+        fflush(stdout);
+
         fgets(buffer, sizeof(buffer), stdin);
 
-        buffer[strcspn(buffer, "\n")] = 0;   // remove Enter
+        buffer[strcspn(buffer, "\n")] = '\0';
 
-        sendto(sockfd, buffer, strlen(buffer)+1, 0,
-        (struct sockaddr*)&server_addr, addr_len);
+        sendto(sockfd, buffer, strlen(buffer), 0,
+               (struct sockaddr*)&server_addr, addr_len);
 
-         memset(buffer, 0, sizeof(buffer));
-         recvfrom(sockfd, buffer, sizeof(buffer)-1, 0,
-         (struct sockaddr*)&server_addr, &addr_len);
+        memset(buffer, 0, sizeof(buffer));
 
-         printf("Server: %s\n", buffer);        
+        int n = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0,
+                         (struct sockaddr*)&server_addr, &addr_len);
+
+        if (n < 0) {
+            perror("recvfrom failed");
+            continue;
+        }
+
+        buffer[n] = '\0';
+
+        printf("Server: %s\n", buffer);
     }
 
     close(sockfd);
