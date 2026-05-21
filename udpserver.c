@@ -11,29 +11,46 @@ int main() {
     char buffer[1024];
 
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+        perror("Socket creation failed");
+        exit(1);
+    }
+
+    memset(&server_addr, 0, sizeof(server_addr));
+    memset(&client_addr, 0, sizeof(client_addr));
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(8080);
     server_addr.sin_addr.s_addr = INADDR_ANY;
 
-    bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr));
+    if (bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+        perror("Bind failed");
+        exit(1);
+    }
 
-    printf("UDP Server waiting for message...\n");
+    printf("UDP Server waiting on port 8080...\n");
 
     addr_len = sizeof(client_addr);
 
-    while(1) {
-    memset(buffer, 0, sizeof(buffer));
+    while (1) {
+        memset(buffer, 0, sizeof(buffer));
 
-    recvfrom(sockfd, buffer, sizeof(buffer), 0,
-             (struct sockaddr*)&client_addr, &addr_len);
+        int n = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0,
+                          (struct sockaddr*)&client_addr, &addr_len);
 
-    printf("Client: %s\n", buffer);
+        if (n < 0) {
+            perror("recvfrom failed");
+            continue;
+        }
 
-    strcpy(buffer, "hi");   
+        buffer[n] = '\0';   
 
-    sendto(sockfd, buffer, strlen(buffer)+1, 0,
-           (struct sockaddr*)&client_addr, addr_len);
+        printf("Client: %s\n", buffer);
+
+        strcpy(buffer, "hi");
+
+        sendto(sockfd, buffer, strlen(buffer), 0,
+               (struct sockaddr*)&client_addr, addr_len);
     }
 
     close(sockfd);
