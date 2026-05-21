@@ -22,13 +22,15 @@ int main() {
         printf("Client: ");
         fgets(buffer, sizeof(buffer), stdin);
 
-        sendto(sockfd, buffer, strlen(buffer), 0,
-               (struct sockaddr*)&server_addr, addr_len);
+        buffer[strcspn(buffer, "\n")] = 0;   // remove Enter
 
-        recvfrom(sockfd, buffer, sizeof(buffer), 0,
-                 (struct sockaddr*)&server_addr, &addr_len);
+        sendto(sockfd, buffer, strlen(buffer)+1, 0,
+       (struct sockaddr*)&server_addr, addr_len);
 
-        printf("Server: %s\n", buffer);
+         recvfrom(sockfd, buffer, sizeof(buffer), 0,
+         (struct sockaddr*)&server_addr, &addr_len);
+
+         printf("Server: %s\n", buffer);        
     }
 
     close(sockfd);
